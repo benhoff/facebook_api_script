@@ -1,0 +1,4 @@
+want to use an API to pull down, our pictures
+want to build a haarcascade file using our pictures
+
+would be nice to use https://github.com/biometrics/openbr to build it for us (likely be in c++)
