@@ -22,6 +22,7 @@ def display_images(filenames, face_cascade, face_coordinate_list=None):
     for index, file in enumerate(filenames):
         # Reads the image out of the file
         cv_frame = cv2.imread(file)
+        print(type(cv_frame))
         # Turns image from BGR (color scheme) into gray!
         gray_image = cv2.cvtColor(cv_frame, cv2.COLOR_BGR2GRAY)
         faces = face_cascade.detectMultiScale(gray_image, 1.3, 5)
@@ -46,7 +47,6 @@ def display_images(filenames, face_cascade, face_coordinate_list=None):
 
         while(True):
             cv2.imshow('{}'.format(filenames[index]), cv_frame)
-            cv2.imshow('gray', gray_image)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
