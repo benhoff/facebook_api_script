@@ -1,4 +1,10 @@
-want to use an API to pull down, our pictures
+
+
+build a simple python script to iterate through pictures and check to see if good or not. 
+1) draw rectangle around tagged face
+2) use openCV to draw a rectangle around detected faces
+3) using a key/user input, either delete the file and associated face coordinates, or move on to the next one!
+
 want to build a haarcascade file using our pictures
 
 would be nice to use https://github.com/biometrics/openbr to build it for us (likely be in c++)
