@@ -36,6 +36,8 @@ def parse_images(data, user_id, picture_number):
         # NOTE: Assume pictures always have tags!
         picture_tags = data_object['tags']['data']
         for data_tag in picture_tags:
+            # FIXME: Not working correctly, getting too many tags
+            # add in functionality to just get the id tags out
             if 'id' in data_tag:
                 if data_tag['id'] == user_id:
                     x_face_coordinate = data_tag['x']
