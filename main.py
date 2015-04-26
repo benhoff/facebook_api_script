@@ -36,9 +36,13 @@ def parse_images(data, user_id, picture_number):
         # NOTE: Assume pictures always have tags!
         picture_tags = data_object['tags']['data']
         for data_tag in picture_tags:
-            if data_tag['id'] == user_id:
-                x_face_coordinate = data_tag['x']
-                y_face_coordinate = data_tag['y']
+            if 'id' in data_tag:
+                if data_tag['id'] == user_id:
+                    x_face_coordinate = data_tag['x']
+                    y_face_coordinate = data_tag['y']
+                else:
+                    x_face_coordinate = 'None'
+                    y_face_coordinate = 'None'
                 face_coordinate_file.write("{},{},{}\n".format(picture_number,
                                                                x_face_coordinate,
                                                                y_face_coordinate))
