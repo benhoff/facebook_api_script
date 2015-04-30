@@ -24,8 +24,6 @@ def get_next_from_data(data):
         return None
 
 def parse_images(data, user_id, picture_number):
-    # TODO: Move into own dir
-    face_coordinate_file = open('face_coordinates.txt', 'a')
     # Facebook defaults to returning 25 pictures
     for data_object in data:
         picture_url = data_object['source']
@@ -33,7 +31,16 @@ def parse_images(data, user_id, picture_number):
         f.write(urllib.request.urlopen(picture_url).read())
         f.close()
 
-        # NOTE: Assume pictures always have tags!
+
+        # Increment picture number for each picture 
+        picture_number = picture_number + 1
+
+def record_face_percentages_from_pictures(data, user_id, picture_number):
+
+    face_coordinate_file = open('face_coordinates.txt', 'a')
+
+    # Every data obj has 25 pictures in it
+    for data_object in data:
         picture_tags = data_object['tags']['data']
         for data_tag in picture_tags:
             # FIXME: Not working correctly, getting too many tags
@@ -42,17 +49,13 @@ def parse_images(data, user_id, picture_number):
                 if data_tag['id'] == user_id:
                     x_face_coordinate = data_tag['x']
                     y_face_coordinate = data_tag['y']
-                else:
-                    x_face_coordinate = 'None'
-                    y_face_coordinate = 'None'
-                face_coordinate_file.write("{},{},{}\n".format(picture_number,
-                                                               x_face_coordinate,
-                                                               y_face_coordinate))
+                    face_coordinate_file.write(
+                            "{},{},{}\n".format(picture_number,
+                                                x_face_coordinate,
+                                                y_face_coordinate))
 
-        # Increment picture number for each picture 
         picture_number = picture_number + 1
     face_coordinate_file.close()
-
 
 if __name__ == '__main__':
     # TODO: create face_coordinate file off the get go/ or something
@@ -82,6 +85,7 @@ if __name__ == '__main__':
     data = data['data']
     picture_number = 0
     parse_images(data, user_id, picture_number)
+    record_face_percentages_from_pictures(data, user_id, picture_number)
     picture_number += len(data)
     print(len(data))
     
@@ -96,6 +100,8 @@ if __name__ == '__main__':
 
         data = data['data']
         parse_images(data, user_id, picture_number)
+        record_face_percentages_from_pictures(data, user_id, picture_number)
+
         picture_number += len(data)
         print(len(data))
         if next_ is None:
