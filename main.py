@@ -2,27 +2,36 @@ import os
 import csv
 import numpy
 import cv2
+
 def parse_face_coord_file(face_coord_txt_file=None):
     result = []
     if not face_coord_txt_file is None:
         with open(face_coord_txt_file, 'r') as csvfile:
             linereader = csv.reader(csvfile, delimiter=',', quotechar='\n')
-            result = []
-            for row in linereader:
-                temp = []
-                for item in row:
-                    try:
-                        temp.append(float(item))
-                    except ValueError:
-                        temp.append(None)
-                result.append(tuple(temp))
+            for index, x_coord, y_coord in linereader:
+                result.append((int(index), float(x_coord), float(y_coord)))
     return result
 
+def remove_face_coordinate(face_coordinate_list, index):
+    """
+    This method will actually delete the offending index from the 
+    `face_coordinate_list` and the underlying file. Note: this also 
+    assumes the file is in `pictures/face_coordinates.txt`
+    """
+    face_coordinate_list.pop(index)
+    file = open('face_coordinates.txt', 'w')
+    for pic_num, x_coord, y_coord in face_coordinate_list:
+        file.write("{}, {}, {}\n".format(int(pic_num), x_coord, y_coord))
+
+    file.close()
+
 def display_images(filenames, face_cascade, face_coordinate_list=None):
-    for index, file in enumerate(filenames):
+    for file in filenames:
+        # Gets the index from the filename. Assumes filename is in form "123.jpg"
+        index = int(file[:-4])
         # Reads the image out of the file
         cv_frame = cv2.imread(file)
-        print(type(cv_frame))
+
         # Turns image from BGR (color scheme) into gray!
         gray_image = cv2.cvtColor(cv_frame, cv2.COLOR_BGR2GRAY)
         faces = face_cascade.detectMultiScale(gray_image, 1.3, 5)
@@ -46,10 +55,18 @@ def display_images(filenames, face_cascade, face_coordinate_list=None):
 
 
         while(True):
+            # TODO: Quit out of this function logic add me?
             cv2.imshow('{}'.format(filenames[index]), cv_frame)
 
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+            key_pressed = cv2.waitKey(1)
+            if key_pressed == 1113864: # this is the `backspace` key
+                print("removing file {}.jpg".format(index))
+                os.remove('{}.jpg'.format(index))
+                remove_face_coordinate(face_coordinate_list, index)           
                 break
+            elif key_pressed == 1048586: # this is the `enter` key
+                break
+
         cv2.destroyWindow(filenames[index])
 
 if __name__ == '__main__':
@@ -71,8 +88,10 @@ if __name__ == '__main__':
         # TODO: Decide if hit enter if this is not iterable
         if len(face_coord_txt_file) < 1:
             face_coord_txt_file = None
-    
-    face_coordinate_list = parse_face_coord_file(face_coord_txt_file)
+    if face_coord_txt_file:    
+        face_coordinate_list = parse_face_coord_file(face_coord_txt_file)
+    else:
+        face_coordinate_list = None
 
     if not os.path.exists('../haarcascade_frontalface_default.xml'):
         print("Could not find haarcascade file!")
@@ -80,6 +99,7 @@ if __name__ == '__main__':
     face_cascade = cv2.CascadeClassifier('../haarcascade_frontalface_default.xml')
 
     # this functionality needs to be looped/changed
+    print("Push `Enter` to continue to next image, `Backspace` will delete img")
     display_images(filenames, face_cascade, face_coordinate_list)
     
     cv2.destroyAllWindows()
