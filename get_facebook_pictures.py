@@ -84,7 +84,7 @@ if __name__ == '__main__':
 
     data = data['data']
     picture_number = 0
-    #parse_images(data, user_id, picture_number)
+    parse_images(data, user_id, picture_number)
     record_face_percentages_from_pictures(data, user_id, picture_number)
     picture_number += len(data)
     print(len(data))
@@ -99,7 +99,7 @@ if __name__ == '__main__':
         next_ = get_next_from_data(data)
 
         data = data['data']
-        #parse_images(data, user_id, picture_number)
+        parse_images(data, user_id, picture_number)
         record_face_percentages_from_pictures(data, user_id, picture_number)
 
         picture_number += len(data)
