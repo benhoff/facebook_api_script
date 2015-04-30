@@ -62,7 +62,8 @@ def display_images(filenames, face_cascade, face_coordinate_list=None):
             if key_pressed == 1113864: # this is the `backspace` key
                 print("removing file {}.jpg".format(index))
                 os.remove('{}.jpg'.format(index))
-                remove_face_coordinate(face_coordinate_list, index)           
+                if face_coordinate_list:
+                    remove_face_coordinate(face_coordinate_list, index)           
                 break
             elif key_pressed == 1048586: # this is the `enter` key
                 break
@@ -96,8 +97,8 @@ if __name__ == '__main__':
     if not os.path.exists('../haarcascade_frontalface_default.xml'):
         print("Could not find haarcascade file!")
 
+    
     face_cascade = cv2.CascadeClassifier('../haarcascade_frontalface_default.xml')
-
     # this functionality needs to be looped/changed
     print("Push `Enter` to continue to next image, `Backspace` will delete img")
     display_images(filenames, face_cascade, face_coordinate_list)
