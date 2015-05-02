@@ -18,7 +18,10 @@ def remove_face_coordinate(face_coordinate_list, index):
     `face_coordinate_list` and the underlying file. Note: this also 
     assumes the file is in `pictures/face_coordinates.txt`
     """
-    face_coordinate_list.pop(index)
+    all_remaining_indexes = [x for x in face_coordinate_list[0]]
+    delete_me = all_remaining_indexes.index(index)
+
+    face_coordinate_list.pop(delete_me)
     file = open('face_coordinates.txt', 'w')
     for pic_num, x_coord, y_coord in face_coordinate_list:
         file.write("{}, {}, {}\n".format(int(pic_num), x_coord, y_coord))
