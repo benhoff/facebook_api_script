@@ -18,15 +18,17 @@ def remove_face_coordinate(face_coordinate_list, index):
     `face_coordinate_list` and the underlying file. Note: this also 
     assumes the file is in `pictures/face_coordinates.txt`
     """
-    all_remaining_indexes = [x for x in face_coordinate_list[0]]
-    delete_me = all_remaining_indexes.index(index)
+    all_remaining_indexes = [int(x) for x in face_coordinate_list[0]]
+    try:
+        delete_me = all_remaining_indexes.index(index)
+        face_coordinate_list.pop(delete_me)
+        file = open('face_coordinates.txt', 'w')
+        for pic_num, x_coord, y_coord in face_coordinate_list:
+            file.write("{}, {}, {}\n".format(int(pic_num), x_coord, y_coord))
 
-    face_coordinate_list.pop(delete_me)
-    file = open('face_coordinates.txt', 'w')
-    for pic_num, x_coord, y_coord in face_coordinate_list:
-        file.write("{}, {}, {}\n".format(int(pic_num), x_coord, y_coord))
-
-    file.close()
+        file.close()
+    except ValueError:
+        pass
 
 def display_images(filenames, face_cascade, face_coordinate_list=None):
     for file in filenames:
@@ -62,13 +64,13 @@ def display_images(filenames, face_cascade, face_coordinate_list=None):
             cv2.imshow('{}'.format(filenames[index]), cv_frame)
 
             key_pressed = cv2.waitKey(1)
-            if key_pressed == 1113864: # this is the `backspace` key
+            if key_pressed == 8: # this is the `backspace` key
                 print("removing file {}.jpg".format(index))
                 os.remove('{}.jpg'.format(index))
                 if face_coordinate_list:
                     remove_face_coordinate(face_coordinate_list, index)           
                 break
-            elif key_pressed == 1048586: # this is the `enter` key
+            elif key_pressed == 13: # this is the `enter` key
                 break
 
         cv2.destroyWindow(filenames[index])
