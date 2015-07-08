@@ -57,7 +57,7 @@ def record_face_percentages_from_pictures(data, user_id, picture_number):
         picture_number = picture_number + 1
     face_coordinate_file.close()
 
-if __name__ == '__main__':
+def main():
     # TODO: create face_coordinate file off the get go/ or something
     base_url = "https://graph.facebook.com/v2.3/"
 
@@ -108,3 +108,6 @@ if __name__ == '__main__':
             more_photos=False
 
     print("Done!")
+
+if __name__ == '__main__':
+    main()
