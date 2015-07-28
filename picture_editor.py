@@ -14,12 +14,26 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 def size_hint():
     return QtCore.QSize(800, 400)
 
-class SimpleQObject(QtCore.QObject):
+class ImageCropper(QtCore.QObject):
     def __init__(self, parent=None):
-        super(SimpleQObject, self).__init__(parent)
+        super(ImageCropper, self).__init__(parent)
+        file_path = os.path.dirname(os.path.realpath(__file__))
+        self.cropped_photos_path = os.path.join(file_path, 'cropped_photos')
+        if not os.path.exists(self.cropped_photos_path):
+            os.mkdir(self.cropped_photos_path)
+
+    @QtCore.pyqtSlot(QtCore.QFile, QtCore.QRect)
+    def rect_slot(self, file_info, rectangle_info):
+        full_image = QtGui.QImage(file_info.fileName())
+        cropped_image = full_image.copy(rectangle_info)
+        base_name = os.path.basename(file_info.fileName())
+        base_name.replace('.', '_cropped.', 1)
+        cropped_image.save(os.path.join(self.cropped_photos_path, base_name))
+
 
 class MyGraphicScene(QtWidgets.QGraphicsScene):
     rect_signal = QtCore.pyqtSignal(QtCore.QFile, QtCore.QRect)
+    resize_signal = QtCore.pyqtSignal(int, int)
     def __init__(self, picture_directory=None, parent=None):
         super(MyGraphicScene, self).__init__(parent)
         log.debug(picture_directory)
@@ -52,9 +66,8 @@ class MyGraphicScene(QtWidgets.QGraphicsScene):
         self.pixmap_filename = QtCore.QFile(self.pictures_list.pop())
         log.debug(self.pixmap_filename.fileName())
         image = QtGui.QImage(self.pixmap_filename.fileName())
-        self.pixmap_item = QtWidgets.QGraphicsPixmapItem(QtGui.QPixmap.fromImage(image))
-        self.addItem(self.pixmap_item)
-
+        pixmap = QtWidgets.QGraphicsPixmapItem(QtGui.QPixmap.fromImage(image))
+        self.pixmap_item = self.addItem(pixmap)
 
     def send_rectangle_slot(self):
         self.rect_signal.emit(
@@ -79,7 +92,7 @@ class MyGraphicScene(QtWidgets.QGraphicsScene):
             self._ellipse_height = self.initial_radius * 2
             self._ellipse_width = self.initial_radius * 2
 
-            self.current_ellipse = self.addEllipse(
+            self.current_ellipse = self.addRect(
                     mouse_event.scenePos().x(),
                     mouse_event.scenePos().y(),
                     self._ellipse_width,
@@ -137,10 +150,13 @@ file_dir = os.path.dirname(os.path.realpath(__file__))
 picture_directory= os.path.join(file_dir, 'pictures', '')
 # Create scene
 scene = MyGraphicScene(picture_directory)
+image_cropper = ImageCropper()
+scene.rect_signal.connect(image_cropper.rect_slot)
 
 # create graphics view
 graphics_view = QtWidgets.QGraphicsView()
 graphics_view.setScene(scene)
+scene.resize_signal.connect(graphics_view.resize)
 
 widget = QtWidgets.QWidget()
 layout = QtWidgets.QVBoxLayout()
@@ -149,12 +165,6 @@ push_button.clicked.connect(scene.send_rectangle_slot)
 
 # FIXME: Implement
 #scene.rect_signal.connect(
-
-def crop_image(original_image, rectangle):
-    pixmap = original_image.pixmap()
-    cropped = pixmap.copy(rectangle)
-    return cropped
-
 
 layout.addWidget(graphics_view)
 layout.addWidget(push_button)
