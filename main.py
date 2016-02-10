@@ -1,3 +1,5 @@
+#FIXME 
+import sys
 import os
 import csv
 import numpy
@@ -79,6 +81,7 @@ if __name__ == '__main__':
 
     if not os.path.exists("pictures"):
         # FIXME: find some way to break out of the program
+        sys.exit(-1)
         print("the pictures directory does not exist, have you run get_pictures_from_facebook.py yet?")
 
     os.chdir('pictures')    
