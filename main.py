@@ -1,4 +1,3 @@
-#FIXME 
 import sys
 import os
 import csv
@@ -16,8 +15,8 @@ def parse_face_coord_file(face_coord_txt_file=None):
 
 def remove_face_coordinate(face_coordinate_list, index):
     """
-    This method will actually delete the offending index from the 
-    `face_coordinate_list` and the underlying file. Note: this also 
+    This method will actually delete the offending index from the
+    `face_coordinate_list` and the underlying file. Note: this also
     assumes the file is in `pictures/face_coordinates.txt`
     """
     all_remaining_indexes = [int(x) for x in face_coordinate_list[0]]
@@ -43,10 +42,10 @@ def display_images(filenames, face_cascade, face_coordinate_list=None):
         gray_image = cv2.cvtColor(cv_frame, cv2.COLOR_BGR2GRAY)
         faces = face_cascade.detectMultiScale(gray_image, 1.3, 5)
         print(faces)
-        
+
         for (x, y, w, h) in faces:
             cv2.rectangle(cv_frame, (x,y),(w+w, y+h), (255, 0, 0), 2)
-        
+
         # NOTE: This is the coordinates from facebook!
         if face_coordinate_list:
             image_height, image_width, _ = cv_frame.shape 
@@ -70,7 +69,7 @@ def display_images(filenames, face_cascade, face_coordinate_list=None):
                 print("removing file {}.jpg".format(index))
                 os.remove('{}.jpg'.format(index))
                 if face_coordinate_list:
-                    remove_face_coordinate(face_coordinate_list, index)           
+                    remove_face_coordinate(face_coordinate_list, index)
                 break
             elif key_pressed == 13: # this is the `enter` key
                 break
@@ -80,11 +79,10 @@ def display_images(filenames, face_cascade, face_coordinate_list=None):
 if __name__ == '__main__':
 
     if not os.path.exists("pictures"):
-        # FIXME: find some way to break out of the program
-        sys.exit(-1)
         print("the pictures directory does not exist, have you run get_pictures_from_facebook.py yet?")
+        sys.exit(-1)
 
-    os.chdir('pictures')    
+    os.chdir('pictures')
     _, _, filenames = next(os.walk("."))
     if 'face_coordinates.txt' in filenames:
         face_coord_txt_index = filenames.index('face_coordinates.txt')
@@ -97,7 +95,7 @@ if __name__ == '__main__':
         # TODO: Decide if hit enter if this is not iterable
         if len(face_coord_txt_file) < 1:
             face_coord_txt_file = None
-    if face_coord_txt_file:    
+    if face_coord_txt_file:
         face_coordinate_list = parse_face_coord_file(face_coord_txt_file)
     else:
         face_coordinate_list = None
@@ -105,10 +103,10 @@ if __name__ == '__main__':
     if not os.path.exists('../haarcascade_frontalface_default.xml'):
         print("Could not find haarcascade file!")
 
-    
+
     face_cascade = cv2.CascadeClassifier('../haarcascade_frontalface_default.xml')
     # this functionality needs to be looped/changed
     print("Push `Enter` to continue to next image, `Backspace` will delete img")
     display_images(filenames, face_cascade, face_coordinate_list)
-    
+
     cv2.destroyAllWindows()
