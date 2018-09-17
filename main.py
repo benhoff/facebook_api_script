@@ -48,7 +48,7 @@ def display_images(filenames, face_cascade, face_coordinate_list=None):
 
         # NOTE: This is the coordinates from facebook!
         if face_coordinate_list:
-            image_height, image_width, _ = cv_frame.shape 
+            image_height, image_width, _ = cv_frame.shape
 
             # Facebook keeps coords as percentages!
             if face_coordinate_list:
